@@ -79,62 +79,7 @@ def garnn():
         root_ip = "YOUR_ROOT_AUTHORITIVE_IP"
     elif extension == 2:
         print("""
-    ARTICLE IX: REGISTRY SERVICE COMPLIANCE, DEFAULT, AND THE ABSOLUTE RECLAMATION PROTOCOL ("KILL SWITCH")
-
-    Section 9.01 – Scope and Autonomous Enforcement Authority
-
-    The Registrant explicitly acknowledges and agrees that the .rrn Top-Level Zone
-    operates as a centralized, heavily regulated, premium digital identity zone under the
-    supreme jurisdictional authority of the Foundation. To safeguard the integrity, public
-    reputation, and absolute security of the alternative root network, the Foundation
-    maintains exclusive administrative control over the Master Registry Ledger.
-
-    The Registrant understands that a .rrn domain is not a permanent property right, but a
-    conditional, highly regulated operating license. By executing this agreement, the
-    Registrant grants the Foundation the absolute, unappealable, and immediate technical
-    right to execute the Registry Reclamation Protocol (hereinafter referred to as the "Kill
-    Switch") to suspend, revoke, clear, or reclaim any .rrn domain name under the
-    conditions set forth in Section 9.02.
-
-    Section 9.02 – Triggers for Immediate Execution of the Kill Switch
-
-    The Foundation, its automated monitoring protocols, or its designated international
-    compliance legal teams may trigger the Kill Switch without prior judicial intervention,
-    notice, or hearing, upon the occurrence of any of the following Events of Default:
-
-    1. Financial Non-Compliance and Upkeep Delinquency: Failure by the Registrant (or
-    its managing Registrar) to settle the tiered enterprise subscription upkeep fees,
-    licensing fees, or associated platform balances within exactly zero (0) seconds of the
-    specified calendar renewal timestamp.
-        
-    2. Evasion of Protocol Royalties: Any attempt to bypass, obfuscate, or redirect the
-    automated ledger royalty mechanisms during a domain transfer, secondary market
-    sale, or commercial sub-domain assignment. All transfers must clear the native
-    platform marketplace escrow engine.
-
-    3. Malicious Network Activity and Spoofing: The use of the .rrn domain to host,
-    direct, or facilitate phishing campaigns, spoofing, malicious malware distribution,
-    decentralized financial (DeFi) scams, or anonymous identity fraud. Because the .rrn
-    zone is a contractually guaranteed "Verified Safe Zone," any compromise of public
-    trust triggers an instant network response.
-
-    4. Corporate Dissolution or Fraudulent KYC/KYB: The structural bankruptcy, legal
-    dissolution, or regulatory stripping of the Registrant’s legal business entity in its
-    home jurisdiction, or the discovery of falsified corporate papers, trademark
-    documentation, or authorized signatory passport records during Phase 1 onboarding audits.
-        
-    Section 9.03 – Mechanics of Revocation and Safe Harbor Immunity
-
-    Upon the triggering of an Event of Default, the Foundation shall execute the Kill Switch at
-    the core root database level.
-
-    • The cryptographic pointers mapping the .rrn name to the Registrant's servers or
-    multi-sig wallets will be severed instantly.
-
-    • Traffic will immediately cease resolving across the alternative non-www root network.
-
-    • The domain name will automatically revert back to the ownership ledger of the
-    Foundation for public auction or permanent structural holding.
+        YOUR_TEXTS
         """)
         agree = input("Agree with it [y/n]: ")
         if agree == "y":
