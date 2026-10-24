@@ -11,7 +11,7 @@ import psutil
 import time
 import socket
 import threading
-import psycopg
+import ssl
 from datetime import datetime, timedelta
 import pydoc
 
@@ -43,23 +43,36 @@ LOG_DIR = "log"
 CHAIN_FILE = os.path.join(DATA_DIR, "name.conf")
 REGISTRAR = os.path.join(DATA_DIR, "registrar.conf")
 
-def garnn():
-    tname = input("Enter Imperian Name: ").strip()
-    tname = tname.lower().replace(" ", "")
-    tname = re.sub(r'[^a-z0-9]', '', tname)
-    file_log = f"{LOG_DIR}/{tname}-name.log"
+def create_tls_connection(root_ip, port):
+    context = ssl.create_default_context(
+        cafile="root_ca.crt"
+    )
 
+    return context.wrap_socket(
+        socket.create_connection(
+            (root_ip, port),
+            timeout=10
+        ),
+        server_hostname=root_ip
+    )
+
+def garnn():
     print("wddd or www")
     internet = input("Enter Internet type: ").strip()
     if internet == "wddd":
-        name = f"idtp/::wddd:{tname}"
+        name = "idtp/::wddd:"
         var = "wddd "
     elif internet == "www":
-        name = f"www.{tname}"
+        name = "www."
         var = "www  "
     else:
         print("Invalid Statement!")
         return
+    tname = input("Enter Imperian Name: ").strip()
+    tname = tname.lower().replace(" ", "")
+    tname = re.sub(r'[^a-z0-9]', '', tname)
+
+    name = f"{name}{tname}"
 
     print("""
 1 = -rev
@@ -76,10 +89,65 @@ def garnn():
         id = secrets.token_urlsafe(6)[:6]
         id = f"{id}-REV-TCHR"
         root_server = "rev-thrichur-gsl"
-        root_ip = "YOUR_ROOT_AUTHORITIVE_IP"
+        root_ip = "IP"
     elif extension == 2:
         print("""
-        YOUR_TEXTS
+    ARTICLE IX: REGISTRY SERVICE COMPLIANCE, DEFAULT, AND THE ABSOLUTE RECLAMATION PROTOCOL ("KILL SWITCH")
+
+    Section 9.01 – Scope and Autonomous Enforcement Authority
+
+    The Registrant explicitly acknowledges and agrees that the .rrn Top-Level Zone
+    operates as a centralized, heavily regulated, premium digital identity zone under the
+    supreme jurisdictional authority of the Foundation. To safeguard the integrity, public
+    reputation, and absolute security of the alternative root network, the Foundation
+    maintains exclusive administrative control over the Master Registry Ledger.
+
+    The Registrant understands that a .rrn domain is not a permanent property right, but a
+    conditional, highly regulated operating license. By executing this agreement, the
+    Registrant grants the Foundation the absolute, unappealable, and immediate technical
+    right to execute the Registry Reclamation Protocol (hereinafter referred to as the "Kill
+    Switch") to suspend, revoke, clear, or reclaim any .rrn domain name under the
+    conditions set forth in Section 9.02.
+
+    Section 9.02 – Triggers for Immediate Execution of the Kill Switch
+
+    The Foundation, its automated monitoring protocols, or its designated international
+    compliance legal teams may trigger the Kill Switch without prior judicial intervention,
+    notice, or hearing, upon the occurrence of any of the following Events of Default:
+
+    1. Financial Non-Compliance and Upkeep Delinquency: Failure by the Registrant (or
+    its managing Registrar) to settle the tiered enterprise subscription upkeep fees,
+    licensing fees, or associated platform balances within exactly zero (0) seconds of the
+    specified calendar renewal timestamp.
+        
+    2. Evasion of Protocol Royalties: Any attempt to bypass, obfuscate, or redirect the
+    automated ledger royalty mechanisms during a domain transfer, secondary market
+    sale, or commercial sub-domain assignment. All transfers must clear the native
+    platform marketplace escrow engine.
+
+    3. Malicious Network Activity and Spoofing: The use of the .rrn domain to host,
+    direct, or facilitate phishing campaigns, spoofing, malicious malware distribution,
+    decentralized financial (DeFi) scams, or anonymous identity fraud. Because the .rrn
+    zone is a contractually guaranteed "Verified Safe Zone," any compromise of public
+    trust triggers an instant network response.
+
+    4. Corporate Dissolution or Fraudulent KYC/KYB: The structural bankruptcy, legal
+    dissolution, or regulatory stripping of the Registrant’s legal business entity in its
+    home jurisdiction, or the discovery of falsified corporate papers, trademark
+    documentation, or authorized signatory passport records during Phase 1 onboarding audits.
+        
+    Section 9.03 – Mechanics of Revocation and Safe Harbor Immunity
+
+    Upon the triggering of an Event of Default, the Foundation shall execute the Kill Switch at
+    the core root database level.
+
+    • The cryptographic pointers mapping the .rrn name to the Registrant's servers or
+    multi-sig wallets will be severed instantly.
+
+    • Traffic will immediately cease resolving across the alternative non-www root network.
+
+    • The domain name will automatically revert back to the ownership ledger of the
+    Foundation for public auction or permanent structural holding.
         """)
         agree = input("Agree with it [y/n]: ")
         if agree == "y":
@@ -96,26 +164,26 @@ def garnn():
         id = secrets.token_urlsafe(6)[:6]
         id = f"{id}-RRN-TCHR"
         root_server = "rrn-thrichur-gsl"
-        root_ip = "YOUR_ROOT_AUTHORITIVE_IP"
+        root_ip = "IP"
     elif extension == 3:
         name = f"{name}-edu"
         tname = f"{tname}-edu"
         root_server = "edu-ginna-gsl"
-        root_ip = "YOUR_ROOT_AUTHORITIVE_IP"
+        root_ip = "IP"
         id = secrets.token_urlsafe(6)[:6]
         id = f"{id}-EDU-GINA"
     elif extension == 4:
         name = f"{name}-prcn"
         tname = f"{tname}-prcn"
         root_server = "prcn-ginna-gsl"
-        root_ip = "YOUR_ROOT_AUTHORITIVE_IP"
+        root_ip = "IP"
         id = secrets.token_urlsafe(6)[:6]
         id = f"{id}-EDU-GINA"
     elif extension == 5:
         name = f"{name}-edu"
         tname = f"{tname}-edu"
         root_server = "edu-neumann-gsl"
-        root_ip = "YOUR_ROOT_AUTHORITIVE_IP"
+        root_ip = "IP"
         id = secrets.token_urlsafe(6)[:6]
         id = f"{id}-EDU-GINA"
     else:
@@ -143,14 +211,23 @@ def garnn():
             """)
     expiry = int(input("Enter Expiry: "))
 
-    email = input("Enter Email for Imperial: ")
+    txt = input("Your Text for your Imperian")
 
-    server1 = input("Enter Server 1 IP: ")
-    server2 = input("Enter Server 2 IP: ")
+    email = input("Enter Email for Imperian: ")
+    if email is None:
+        email = ""
+    else:
+        email = f"{email}@{tname}"
 
-    #RSA - Root Server Address
-    server_imperian = f"rsa1-{tname}"
-    server_imperian2 = f"rsa2-{tname}"
+    server1 = "IP"
+    server2 = "IP"
+    server3 = "IP"
+
+    #rsa - Root Server Address
+    #ginna network server
+    server_imperian = "thr-exmpl-ext"
+    server_imperian2 = "gna-exmpl-ext"
+    server_imperian3 = "wirp-exmpl-gns"
 
     now = datetime.now()
     if expiry == 1:
@@ -170,27 +247,33 @@ def garnn():
     private_key = ec.generate_private_key(ec.SECP256K1())
     public_key = private_key.public_key()
 
+    # Serialize public key as BYTES
     public_bytes = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
 
+    # Serialize private key as BYTES
     private_bytes = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption()
     )
 
+    # Hash the BYTES
     public_hash = hashlib.sha256(public_bytes).hexdigest()
     private_hash = hashlib.sha256(private_bytes).hexdigest()
 
+    # Message to sign
     message = f"{name}.{ip}".encode("utf-8")
 
+    # Sign
     signature = private_key.sign(
         message,
         ec.ECDSA(hashes.SHA256())
     ).hex()
 
+    # Registry record
     record = (f"""
 Record ID: {id}
 Imperian Name: {name}
@@ -226,6 +309,7 @@ $       IPT        V4 & V6
 $       SL         {ip}
 $       SLV6       {ipv6}
 {var}   LOC        {ip} | {ipv6}
+{var}   TXT        {txt}
 
 !       RGSTR      {registrar}
 !       RGSTRID    {registrar_id}
@@ -233,6 +317,7 @@ $       SLV6       {ipv6}
 Server Location (
     {server_imperian}  A  {server1}
     {server_imperian2}  A  {server2}
+    {server_imperian3}  A  {server3}
 )
 
 Authoritive Server (
@@ -266,13 +351,39 @@ SL1: {server_imperian} : {server1}
 SL2: {server_imperian2} : {server2}
 AUTHORITY: {root_server} : {root_ip}
 MAIL: {email}
+TXT: {txt}
 CREATED: {now}
 EXPIRY: {expiry}
     """
 
+    file_log = f"{LOG_DIR}/{tname}-name.log"
     # Create data directory if necessary
     os.makedirs(DATA_DIR, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
+
+    REQ_PORT = 86
+    IP_REQ = ""
+
+    server_req = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        server_req.connect((IP_REQ, REQ_PORT))
+        server_req.send(name.encode("utf-8"))
+        response_raw, server_address = server_req.recvfrom(4096)
+        response_raw = response_raw.decode("utf-8")
+        print(response_raw)
+        if response_raw == "ISINNE:RNA":
+            print("Name Accepted!")
+        elif response_raw == "ISINNE:RNE":
+            print("Request name already exists!")
+            return
+        else:
+            print("ERROR!")
+            return
+        
+    except ConnectionAbortedError:
+        print("Could not connect")
+    finally:
+        server_req.close()
 
     # Append record
     with open(CHAIN_FILE, "a", encoding="utf-8") as f:
@@ -314,6 +425,24 @@ EXPIRY: {expiry}
     finally:
         root_socket.close()
 
+
+    root_socket1 = socket.socket(
+        socket.AF_INET,
+        socket.SOCK_STREAM
+    )
+    ROOT_PORT = 80
+    try:
+        root_socket1.connect((root_ip, ROOT_PORT))
+        root_socket1.send(record.encode('utf-8'))
+        print("Record is sent to root server")
+    except OSError as e:
+        print("Transfer failed:", e)
+
+    finally:
+        root_socket1.close()
+
+    
+
     print("SUCCESS!!!")
 
 def registrar():
@@ -325,6 +454,7 @@ def registrar():
 
     file_path = "article.vii"
     if os.path.exists(file_path):
+        # Open the file and read its contents safely
         with open(file_path, "r", encoding="utf-8") as f:
             file_content = f.read()
 
@@ -354,22 +484,27 @@ def registrar():
     private_key = ec.generate_private_key(ec.SECP256K1())
     public_key = private_key.public_key()
     
+        # Serialize public key as BYTES
     public_bytes = public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
     
+        # Serialize private key as BYTES
     private_bytes = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
         encryption_algorithm=serialization.NoEncryption()
     )
     
+        # Hash the BYTES
     public_hash = hashlib.sha256(public_bytes).hexdigest()
     private_hash = hashlib.sha256(private_bytes).hexdigest()
     
+        # Message to sign
     message = f"{name}".encode("utf-8")
     
+        # Sign
     signature = private_key.sign(
         message,
         ec.ECDSA(hashes.SHA256())
@@ -439,6 +574,7 @@ EXPIRY: {expiry}
     os.makedirs(DATA_DIR, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
     
+        # Append record
     with open(REGISTRAR, "a", encoding="utf-8") as f:
         f.write(record)
 
@@ -531,7 +667,7 @@ def search_name():
             print(f"Registrar: {registrar}")
             print(f"Created: {created}")
             print(f"Expires: {expires}")
-            return 
+            return  
             
     print(f"\nNo record found for the name: {name}")
 
