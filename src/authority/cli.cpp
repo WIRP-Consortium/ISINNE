@@ -139,10 +139,71 @@ int daemon() {
     return 0;
 }
 
+int serverrun()
+{
+    STARTUPINFOA si1{};
+    STARTUPINFOA si2{};
+
+    PROCESS_INFORMATION pi1{};
+    PROCESS_INFORMATION pi2{};
+
+    si1.cb = sizeof(si1);
+    si2.cb = sizeof(si2);
+
+    if (CreateProcessA(
+        "named.exe",
+        NULL,
+        NULL,
+        NULL,
+        FALSE,
+        CREATE_NO_WINDOW,
+        NULL,
+        NULL,
+        &si1,
+        &pi1))
+    {
+        std::cout << "[SUCCESS] named.exe started.\n";
+
+        CloseHandle(pi1.hThread);
+        CloseHandle(pi1.hProcess);
+    }
+    else
+    {
+        std::cout << "[ERROR] named.exe failed: "
+                  << GetLastError() << '\n';
+    }
+
+    if (CreateProcessA(
+        "request.exe",
+        NULL,
+        NULL,
+        NULL,
+        FALSE,
+        CREATE_NO_WINDOW,
+        NULL,
+        NULL,
+        &si2,
+        &pi2))
+    {
+        std::cout << "[SUCCESS] request.exe started.\n";
+
+        CloseHandle(pi2.hThread);
+        CloseHandle(pi2.hProcess);
+    }
+    else
+    {
+        std::cout << "[ERROR] request.exe failed: "
+                  << GetLastError() << '\n';
+    }
+
+    return 0;
+}
+
 int main(){
     bool serverRunning = false;
     enableColors();
-    std::cout << MAGENTA << "GINNA AUTHORITIVE OPERATOR DAEMON!" << RESET << std::endl;
+    std::cout << MAGENTA << "       GINNA AUTHORITIVE OPERATOR DAEMON!" << RESET << std::endl;
+    std::cout << YELLOW << "[SYSTEM] ISINNE initialized" << RESET << std::endl;
     while (true)
     {
         std::string command;
@@ -159,6 +220,9 @@ int main(){
         }else if (command == "start isinne"){
             std::cout << GREEN << "[INFO] Authority Server!" << RESET << std::endl;
             daemon();
+        }else if (command == "start daemon"){
+            std::cout << CYAN << BOLD << "[NETWORK] DAEMON RUNNING" << RESET << std::endl;
+            serverrun();
         }
         else{
             std::cout << RED << "[ERROR] INVALID OPTION!!!" << RESET << std::endl;
