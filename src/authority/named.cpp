@@ -68,7 +68,8 @@ int main() {
             std::cerr << "Accept failed: "
                     << WSAGetLastError() << std::endl;
             continue;
-        }    
+        }
+    
 
         char buffer[1024];
 
