@@ -89,7 +89,7 @@ def garnn():
         id = secrets.token_urlsafe(6)[:6]
         id = f"{id}-REV-TCHR"
         root_server = "rev-thrichur-gsl"
-        root_ip = "IP"
+        root_ip = "192.168.1.8"
     elif extension == 2:
         print("""
     ARTICLE IX: REGISTRY SERVICE COMPLIANCE, DEFAULT, AND THE ABSOLUTE RECLAMATION PROTOCOL ("KILL SWITCH")
@@ -164,26 +164,26 @@ def garnn():
         id = secrets.token_urlsafe(6)[:6]
         id = f"{id}-RRN-TCHR"
         root_server = "rrn-thrichur-gsl"
-        root_ip = "IP"
+        root_ip = "192.168.1.8"
     elif extension == 3:
         name = f"{name}-edu"
         tname = f"{tname}-edu"
         root_server = "edu-ginna-gsl"
-        root_ip = "IP"
+        root_ip = "103.145.172.173"
         id = secrets.token_urlsafe(6)[:6]
         id = f"{id}-EDU-GINA"
     elif extension == 4:
         name = f"{name}-prcn"
         tname = f"{tname}-prcn"
         root_server = "prcn-ginna-gsl"
-        root_ip = "IP"
+        root_ip = "103.145.172.173"
         id = secrets.token_urlsafe(6)[:6]
         id = f"{id}-EDU-GINA"
     elif extension == 5:
         name = f"{name}-edu"
         tname = f"{tname}-edu"
         root_server = "edu-neumann-gsl"
-        root_ip = "IP"
+        root_ip = "103.145.172.173"
         id = secrets.token_urlsafe(6)[:6]
         id = f"{id}-EDU-GINA"
     else:
@@ -211,7 +211,7 @@ def garnn():
             """)
     expiry = int(input("Enter Expiry: "))
 
-    txt = input("Your Text for your Imperian")
+    txt = input("Your Text for your Imperian: ")
 
     email = input("Enter Email for Imperian: ")
     if email is None:
@@ -219,15 +219,26 @@ def garnn():
     else:
         email = f"{email}@{tname}"
 
-    server1 = "IP"
-    server2 = "IP"
-    server3 = "IP"
+    company = input("Enter Company Name: ")
+    countryc = input("Country Code: ")
+    phonenumber = input("Enter Contact Number: ")
+    province_state = input("Enter Province / State: ")
+    city = input("Enter City: ")
+    street =  input("Enter Street: ")
+    address = input("Address: ")
+    postalcode = input("Enter Postal Code: ")
+    fax = input("Enter Fax: ")
+    techadmin = input("Enter Tech Admin: ")
+
+    server1 = "192.168.1.8"
+    server2 = "192.168.1.8"
+    server3 = "192.168.1.8"
 
     #rsa - Root Server Address
     #ginna network server
-    server_imperian = "thr-exmpl-ext"
-    server_imperian2 = "gna-exmpl-ext"
-    server_imperian3 = "wirp-exmpl-gns"
+    server_imperian = "thr-rsa-gns"
+    server_imperian2 = "gna-rsa-gns"
+    server_imperian3 = "wirp-rsa-gns"
 
     now = datetime.now()
     if expiry == 1:
@@ -309,7 +320,7 @@ $       IPT        V4 & V6
 $       SL         {ip}
 $       SLV6       {ipv6}
 {var}   LOC        {ip} | {ipv6}
-{var}   TXT        {txt}
+{var}   TXT        "{txt}"
 
 !       RGSTR      {registrar}
 !       RGSTRID    {registrar_id}
@@ -325,6 +336,18 @@ Authoritive Server (
 )
 
 @      MOINN       {email}
+
+?      COM         {company}
+?      CC          {countryc}
+?      NUM         {phonenumber}
+?      FAX         {fax}
+
+>      ADDR        {address}
+>      POSTAL      {postalcode}
+>      CITY        {city}
+>      STREET      {street}
+>      ADMIN       {techadmin}
+>      PROV/STE    {province_state}
                    
 INC     {now}        
 INE     {expiry}     
@@ -352,6 +375,16 @@ SL2: {server_imperian2} : {server2}
 AUTHORITY: {root_server} : {root_ip}
 MAIL: {email}
 TXT: {txt}
+COMPANY: {company}
+ISO CODE 3166-1 codes: {countryc}
+NUMBER: {phonenumber}
+FAX: {fax}
+ADDRESS: {address}
+POSTAL: {postalcode}
+CITY: {city}
+STREET: {street}
+ADMIN: {techadmin}
+PROVINCE/STATE: {province_state}
 CREATED: {now}
 EXPIRY: {expiry}
     """
@@ -362,7 +395,7 @@ EXPIRY: {expiry}
     os.makedirs(LOG_DIR, exist_ok=True)
 
     REQ_PORT = 86
-    IP_REQ = ""
+    IP_REQ = "192.168.1.8"
 
     server_req = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -592,6 +625,7 @@ def read_registry():
     with open(CHAIN_FILE, "r", encoding="utf-8") as f:
         content = f.read()
 
+    # Each registration is separated by a blank line
     records = content.strip().split("\n\n")
 
     if not records:
@@ -636,6 +670,7 @@ def search_name():
     
     try:
         with open(CHAIN_FILE, "r", encoding="utf-8") as f:
+            # Split by double newlines to separate individual record blocks
             blocks = f.read().split("\n\n")
     except FileNotFoundError:
         print(f"Error: The file '{CHAIN_FILE}' was not found.")
@@ -652,6 +687,7 @@ def search_name():
                 key, val = line.split(":", 1)
                 record[key.strip()] = val.strip()
         
+        # Check if this specific record matches the searched name
         if record.get("Imperian Name") == name:
             ipa = record.get("IP V4", "Not Found")
             ip6 = record.get("IP V6", "Not Found")
@@ -667,7 +703,7 @@ def search_name():
             print(f"Registrar: {registrar}")
             print(f"Created: {created}")
             print(f"Expires: {expires}")
-            return  
+            return  # Exit the function once the match is found
             
     print(f"\nNo record found for the name: {name}")
 
@@ -728,24 +764,123 @@ def stop_server():
 
     print("ISINNE server stopped.")
 
+def load_config(path):
+    config = {}
+
+    if not os.path.exists(path):
+        print("[!] Config not found, using defaults")
+        return config
+
+    with open(path, "r") as f:
+        for line in f:
+            line = line.strip()
+
+            if not line:
+                continue
+
+            if line.startswith("#"):
+                continue
+
+            key, value = line.split(None, 1)
+
+            value = value.strip()
+
+            if value.startswith('"') and value.endswith('"'):
+                value = value[1:-1]
+
+            config[key] = value
+
+    return config
+
+CONFIG = load_config("isinned.conf")
+HOST = CONFIG.get(
+    "BindAddress",
+    "0.0.0.0"
+)
+PORT = int(CONFIG.get(
+    "Listen",
+    60
+))
+
+def network():
+    netdata = f"""
+HOST          ROUTING        PORT      TYPE
+{HOST}       {HOST}        {PORT}        DGRAM      
+"""
+    print(netdata)
+
+def writeip():
+    name_imp = input("Enter the authoritive server(Imperian): ")
+    ipv4 = input("Enter IP V4: ")
+    ipv6 = input("Enter IP V6: ")
+    status = input("Status: ")
+
+    lengthimp = len(name_imp)
+    if lengthimp > 15:
+        return
+    spaceneed = 15 - lengthimp
+    space = " " * spaceneed
+    imperian = f"{name_imp}{space}"
+
+    lengstat = len(status)
+    if lengstat > 10:
+        return
+    spcneed = 10 - lengstat
+    spce = " " * spcneed
+    status = f"{status}{spce}"
+
+    iplen = len(ipv4)
+    if iplen > 15:
+        print("Invalid IP V4")
+        return
+    spcip = 22 - iplen
+    spceip = " " * spcip
+    ipv4 = f"{ipv4}{spceip}"
+
+    content = f"""\n{imperian}     {status}          {ipv4}       {ipv6}"""
+    with open("peer.conf", "a", encoding='utf-8') as f:
+        f.write(content)
+
+def iptables():
+    with open("peer.conf", "r", encoding='utf-8') as i:
+        file_content = i.read()
+
+    print(file_content)
+
+def ipcheck():
+    with open("peer.conf", "r", encoding='utf-8') as g:
+        file = g.read()
+
+    pattern = r"(\S+)\s{2,}(.+?)\s{2,}(\S+)\s{2,}(\S+)"
+
+    for line in file.strip().splitlines()[1:]:
+        match = re.match(pattern, line)
+
+        if match:
+            name, status, ipv4, ipv6 = match.groups()
+
+            print(f"\nImperian: {name}")
+            print(f"Status:   {status.strip()}")
+            print(f"IPv4:     {ipv4}")
+            print(f"IPv6:     {ipv6}")
+
 def main():
+    print("\n")
+    print("Global Internet Names and Numbers Authority")
+    print("              GINNA AUTHORITY")
+    print("register - Sign/Register Imperian name")
+    print("registrar - Register Registrar / Create Lease")
+    print("read name - Read imperian")
+    print("read registrar - Show Registrars")
+    print("search name - Search imperian name")
+    print("exit - Exit")
+    print("isinne [-c, -h, -hc] for more things!")
+    print("Internet System for Imperian Names and Numbers Exchange")
+    print("(C) Copyright affliated to Rohith & GINNA \n\n")
 
     while True:
 
-        print("\n")
-        print("Global Internet Names and Numbers Authority")
-        print("              GINNA AUTHORITY")
-        print("register - Sign/Register Imperian name")
-        print("registrar - Register Registrar / Create Lease")
-        print("read name - Read imperian")
-        print("read registrar - Show Registrars")
-        print("search name - Search imperian name")
-        print("exit - Exit")
-        print("isinne [-c, -h, -hc] for more things!")
-        print("Internet System for Imperian Names and Numbers Exchange")
-        print("(C) Copyright affliated to Rohith & GINNA \n\n")
-
-        command = input("Ginna@ISINNE~$ ").strip()
+        command = input("Ginna@ISINNE:~$ ").strip()
 
         if command == "register":
             garnn()
@@ -768,12 +903,25 @@ def main():
         elif command == "search name":
             search_name()
 
+        elif command == "netstat":
+            network()
+
+        elif command == "iptable":
+            iptables()
+
+        elif command == "writeip":
+            writeip()
+
+        elif command == "":
+            pass
+
         elif command == "checkregion":
             pass
 
         elif command == "isinne -c":
             file_path = "commands.txt"
             if os.path.exists(file_path):
+                # Open the file and read its contents safely
                 with open(file_path, "r", encoding="utf-8") as f:
                     file_content = f.read()
             
